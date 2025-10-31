@@ -1,14 +1,16 @@
 class Pack {
   var duracion
   var precio
-  var beneficios
+  const beneficios = #{}
   var coordinador
 
-  method precioBase() = precio + beneficios
+  method precioBase() = precio + self.precioBeneficios()
 
-  method asignarBeneficio() {
-    beneficios = BeneficiosOpcionales.costo() * beneficios
-  }
+  method asignarBeneficio(unBeneficio) {
+    beneficios.add(unBeneficio)
+    }
+  method precioBeneficios() = beneficios.filter({b=>b.estaVigente()}).sum({b=>b.costo()})
+
 
   method esPremium()
 
@@ -23,10 +25,21 @@ class PackNacional inherits Pack {
   var destino
   var actividades = []
 
-override method precioBase() = super()
+
 
 override method esPremium() = duracion > 10 and coordinador.esAltamenteCalificado()
+override method precioBase() = super()
 
+}
+
+class PackProvincia inherits PackNacional {
+  const ciudadesAVisitar  
+
+  method cantidadBeneficiosVigentes() = beneficios.filter({b=>b.estaVigente()}).size()
+
+  override method esPremium() = actividades.size() >= 4 and ciudadesAVisitar > 5 and self.cantidadBeneficiosVigentes() >= 3
+
+  override method precioBase() = if (self.esPremium()) super() + (super() * 0.05) else super()
 
 }
 
@@ -43,7 +56,7 @@ class PackInternacional inherits Pack {
 
   
 
-  override method esPremium() =  duracion > 20 and escalas < 0 and esLugarDeInteres 
+  override method esPremium() =  duracion > 20 and escalas == 0 and esLugarDeInteres 
 }
 
 class Coordinador {
@@ -73,7 +86,7 @@ class CoordinadorGuia inherits Coordinador {
 
 class AsistenteLogistico inherits Coordinador {
   
-  override method esAltamenteCalificado() = super() and self.aniosExperiencia() < 3
+  override method esAltamenteCalificado() = super() and self.aniosExperiencia() >= 3
 }
 
 class Acompaniante inherits Coordinador {
@@ -81,14 +94,26 @@ class Acompaniante inherits Coordinador {
   override method esAltamenteCalificado() = super()
 }
 
-object BeneficiosOpcionales {
-  var tipo = 1
-  var costo =100
-  var estaVigente = true
+class BeneficiosOpcionales {
+  const tipo 
+  const costo 
+  const estaVigente 
 
   method tipo() = tipo
 
-  method costo() = 100
+  method costo() = costo
 
-  method estaVigente() = true
+  method estaVigente() = estaVigente
+}
+
+object accesoASalas{
+  
+}
+
+object traslados {
+  
+}
+
+object segurosAdicionales {
+  
 }

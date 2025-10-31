@@ -2,19 +2,23 @@ import packs.*
 
 describe "etapa 1" {
   test "pack nacional sin beneficios devuelve el precio base" {
-    const packNacional1 = new PackNacional(precio = 100, beneficios = 0, destino = 'BsAs', actividades = 0, duracion = 5, coordinador = 'pepe')
+    const packNacional1 = new PackNacional(precio = 100, destino = 'BsAs', actividades = 0, duracion = 5, coordinador = 'pepe')
     assert.equals(100, packNacional1.precioBase())
   }
 }
 
 test "pack nacional con dos beneficios vigentes suma sus costos al precio" {
-  const packNacional2 = new PackNacional(precio = 100, beneficios = 2, destino = 'BsAs', actividades = 0, duracion = 5, coordinador = 'pepe')
-  packNacional2.asignarBeneficio()
-  assert.equals(300, packNacional2.precioBase())
+  const beneficio = new BeneficiosOpcionales(tipo = accesoASalas, costo = 100, estaVigente = true)
+  const beneficio2 = new BeneficiosOpcionales(tipo = accesoASalas, costo = 100, estaVigente = false)
+  const packNacional2 = new PackNacional(precio = 100, beneficios = #{beneficio, beneficio2}, destino = 'BsAs', actividades = 0, duracion = 5, coordinador = 'pepe')
+
+
+
+  assert.equals(200, packNacional2.precioBase())
 }
 
 test "pack internacional sin beneficios suma correctamente un 20%" {
-  const packInternacional1 = new PackInternacional (precio = 100, beneficios = 0, destino = 'BsAs', escalas = 0, esLugarDeInteres = false, duracion = 5, coordinador = 'pepe')
+  const packInternacional1 = new PackInternacional (precio = 100, destino = 'BsAs', escalas = 0, esLugarDeInteres = false, duracion = 5, coordinador = 'pepe')
   assert.equals(120, packInternacional1.precioBase())
 }
 
@@ -59,4 +63,13 @@ describe "etapa3" {
     const packInternacional1 = new PackInternacional(precio = 100, beneficios = 0, destino = 'BsAs', escalas = 0, esLugarDeInteres = true, duracion = 21, coordinador = 'pepe')
     assert.that(packInternacional1.esPremium())
   }
+}
+
+test "precio basse del pack provicia con premium sale 5% mas caro" {
+    const beneficio1 = new BeneficiosOpcionales(tipo = accesoASalas, costo = 100, estaVigente = true)
+    const beneficio2 = new BeneficiosOpcionales(tipo = accesoASalas, costo = 100, estaVigente = true)
+    const beneficio3 = new BeneficiosOpcionales(tipo = accesoASalas, costo = 100, estaVigente = true)
+    const beneficio4 = new BeneficiosOpcionales(tipo = accesoASalas, costo = 100, estaVigente = true)
+    const packprovincia1 = new PackProvincia(duracion = 1 , precio = 100 , beneficios = #{ beneficio1, beneficio2, beneficio3, beneficio4}, coordinador = 'pepe', destino = 'BsAs', actividades = ["caminar", "correr", "pasear", "recorrer"], ciudadesAVisitar = 6)
+    assert.equals(525, packprovincia1.precioBase())
 }
