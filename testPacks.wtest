@@ -1,1 +1,62 @@
-// completar
+import packs.*
+
+describe "etapa 1" {
+  test "pack nacional sin beneficios devuelve el precio base" {
+    const packNacional1 = new PackNacional(precio = 100, beneficios = 0, destino = 'BsAs', actividades = 0, duracion = 5, coordinador = 'pepe')
+    assert.equals(100, packNacional1.precioBase())
+  }
+}
+
+test "pack nacional con dos beneficios vigentes suma sus costos al precio" {
+  const packNacional2 = new PackNacional(precio = 100, beneficios = 2, destino = 'BsAs', actividades = 0, duracion = 5, coordinador = 'pepe')
+  packNacional2.asignarBeneficio()
+  assert.equals(300, packNacional2.precioBase())
+}
+
+test "pack internacional sin beneficios suma correctamente un 20%" {
+  const packInternacional1 = new PackInternacional (precio = 100, beneficios = 0, destino = 'BsAs', escalas = 0, esLugarDeInteres = false, duracion = 5, coordinador = 'pepe')
+  assert.equals(120, packInternacional1.precioBase())
+}
+
+describe "etapa2" {
+  test "guia motivado con 21 viajes es considerado altamente calificado" {
+    const guia1 = new CoordinadorGuia (cantViajesRealizados = 21, aniosExperiencia = 3, estaMotivado = true, rol = 'guia')
+    assert.that(guia1.esAltamenteCalificado())
+  }
+
+  test "asistente logistico no esta calificado con menos de 3 anios de experiencia aunque tenga muchos viajes" {
+    const asistente1 = new AsistenteLogistico (cantViajesRealizados = 21, aniosExperiencia = 2, estaMotivado = true, rol = 'asistente')
+    assert.notThat(asistente1.esAltamenteCalificado())
+  }
+
+  test "acompaniante es calificado si supera la caantidad de viajes" {
+    const acompaniante1 = new Acompaniante(cantViajesRealizados = 21, aniosExperiencia = 3, estaMotivado = true, rol = 'acompaniante')
+    assert.that(acompaniante1.esAltamenteCalificado())
+  }
+
+  test "acompaniante no es calificado si no supera la canti de viajes" {
+    const acompaniante2 = new Acompaniante(cantViajesRealizados = 19, aniosExperiencia = 3, estaMotivado = true, rol = 'guia')
+    assert.notThat(acompaniante2.esAltamenteCalificado())
+  }
+}
+
+describe "etapa3" {
+  test "pack nacional es premium con mas de 10 dias de duracion y coordinador calificado" {
+  const packNacional2 = new PackNacional(precio = 100, beneficios = 2, destino = 'BsAs', actividades = 0, duracion = 11, coordinador = 'uncoordinador')
+  const coordinador1 = new Coordinador(cantViajesRealizados = 21, aniosExperiencia = 3, estaMotivado = true, rol = 'guia')
+  packNacional2.asignarCoordinador(coordinador1)
+  assert.that(packNacional2.esPremium())
+  }
+
+  test "pack nacional no es premium con menos de 10 dias de duracion" {
+  const packNacional2 = new PackNacional(precio = 100, beneficios = 2, destino = 'BsAs', actividades = 0, duracion = 9, coordinador = 'uncoordinador')
+  const coordinador1 = new Coordinador(cantViajesRealizados = 21, aniosExperiencia = 3, estaMotivado = true, rol = 'guia')
+  packNacional2.asignarCoordinador(coordinador1)
+  assert.notThat(packNacional2.esPremium())
+  }
+
+  test "pack internacional es premium si su lugar es de interes, dura mas de 20 dias y no tiene escalas" {
+    const packInternacional1 = new PackInternacional(precio = 100, beneficios = 0, destino = 'BsAs', escalas = 0, esLugarDeInteres = true, duracion = 21, coordinador = 'pepe')
+    assert.that(packInternacional1.esPremium())
+  }
+}
